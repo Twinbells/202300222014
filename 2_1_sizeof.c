@@ -1,3 +1,7 @@
+/*
+*Gets the number of bytes occupied by different base data types and outputs them
+*/
+
 #include <stdio.h>
 
 int main() {
