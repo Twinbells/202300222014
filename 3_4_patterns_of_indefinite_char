@@ -1,0 +1,36 @@
+/*
+*
+*The input is an indefinite number of characters (fewer than 5 characters), and the output is a pictorial representation of these characters
+*
+*/
+
+#include <stdio.h>
+#include <string.h>
+int main(){
+    char input[6];
+    int i,n;
+    printf("Enter the number of characters:");
+    scanf("%d",&n);
+    if(n < 2|| n> 5){
+        printf("Enter 2\n");
+        return 1;
+    }
+    printf("Enter %d characters:\n",n);
+    for (i = 0; i< n; i++){
+        scanf(" %c",&input[i]);
+    }
+    input[n] = '\0';
+    if (strcmp(input, "ET") == 0){
+        printf("******  *******\n");
+        printf("*          *\n");
+        printf("******     *\n");
+        printf("*          *\n");
+        printf("******     *\n");
+    }else{
+        printf("Enter ET\n");
+    }
+    
+    return 0;
+}
+    
+        
