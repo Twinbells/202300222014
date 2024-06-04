@@ -1,3 +1,6 @@
+/*
+*The input is a single English character, and the output is the pattern representation of the English character
+*/
 #include <stdio.h>
 
 void print_char_pattern(char c) {
