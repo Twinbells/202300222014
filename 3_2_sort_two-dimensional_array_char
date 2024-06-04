@@ -1,0 +1,72 @@
+/*
+*
+*sort a two-dimensional array A of char type. The sorted array should satisfy the following requirements: (a) If i < j, then the sum of the ASCII codes of the characters in line i is not greater than the sum of the ASCII codes of the characters in line j.
+(b) For any row k, if i < j, then A[k][i] <= A[k][j]
+*
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int compare_chars(const void *a, const void *b) {
+    return (*(char*)a - *(char*)b);
+}
+
+int compare_rows(const void *a, const void *b) {
+    const char **rowA = (const char **)a;
+    const char **rowB = (const char **)b;
+    int sumA = 0, sumB = 0;
+    for (int i = 0; (*rowA)[i] != '\0'; ++i) {
+        sumA += (int)(*rowA)[i];
+    }
+    for (int i = 0; (*rowB)[i] != '\0'; ++i) {
+        sumB += (int)(*rowB)[i];
+    }
+    return sumA - sumB;
+}
+
+int main() {
+    int rows, cols;
+    printf("Enter the number of rows: ");
+    scanf("%d", &rows);
+    printf("Enter the number of columns: ");
+    scanf("%d", &cols);
+
+    char **A = (char **)malloc(rows * sizeof(char *));
+    for (int i = 0; i < rows; ++i) {
+        A[i] = (char *)malloc(cols * sizeof(char));
+    }
+
+    printf("Enter the elements of the 2D array:\n");
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            scanf(" %c", &A[i][j]); /
+        }
+    }
+
+    for (int i = 0; i < rows; ++i) {
+        qsort(A[i], cols, sizeof(char), compare_chars);
+    }
+
+    char **tempRows = (char **)malloc(rows * sizeof(char *));
+    for (int i = 0; i < rows; ++i) {
+        tempRows[i] = A[i];
+    }
+    qsort(tempRows, rows, sizeof(char *), compare_rows);
+
+    printf("Sorted 2D array:\n");
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            printf("%c ", tempRows[i][j]);
+        }
+        printf("\n");
+    }
+
+    for (int i = 0; i < rows; ++i) {
+        free(A[i]);
+    }
+    free(A);
+    free(tempRows);
+
+    return 0;
+}
