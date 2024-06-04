@@ -1,0 +1,64 @@
+/*
+*
+*eight queens
+*
+*/
+
+#include <stdio.h>  
+#define SIZE 8  
+  
+void printSolution(int board[SIZE][SIZE]) {  
+    for (int i = 0; i < SIZE; i++) {  
+        for (int j = 0; j < SIZE; j++) {  
+            if (board[i][j] == 1) {  
+                printf("Q ");  
+            } else {  
+                printf(".");  
+            }  
+        }  
+        printf("\n");  
+    }  
+    printf("\n");  
+}  
+  
+int isSafe(int board[SIZE][SIZE], int row, int col) {    
+    for (int i = 0; i < SIZE; i++) {  
+        if (board[i][col] == 1) {  
+            return 0;  
+        }  
+    }  
+  
+    for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {  
+        if (board[i][j] == 1) {  
+            return 0;  
+        }  
+    }  
+ 
+    for (int i = row - 1, j = col + 1; i >= 0 && j < SIZE; i--, j++) {  
+        if (board[i][j] == 1) {  
+            return 0;  
+        }  
+    }  
+  
+    return 1;  
+}  
+  
+void solveNQueens(int board[SIZE][SIZE], int row) {  
+    if (row == SIZE) {  
+        printSolution(board);  
+        return;  
+    }  
+    for (int col = 0; col < SIZE; col++) {  
+        if (isSafe(board, row, col)) {  
+            board[row][col] = 1;  
+            solveNQueens(board, row + 1); 
+            board[row][col] = 0;  
+        }  
+    }  
+}  
+  
+int main() {  
+    int board[SIZE][SIZE] = {0};  
+    solveNQueens(board, 0);  
+    return 0;  
+}
