@@ -1,0 +1,28 @@
+/*
+*
+*Implement access to any element of the two-dimensional array, A[m,n].
+*
+*/
+#include <stdio.h>
+
+int two_dim_array_access(int *x, int i, int j, int m, int n);
+
+int main() {
+    int A[2][3] = {{1, 2, 3}, {4, 5, 6}};
+    int value1 = two_dim_array_access(&A[0][0], 0, 1, 2, 3); 
+    int value2 = two_dim_array_access(&A[0][0], 1, 2, 2, 3); 
+    printf("Value at A[0][1]: %d\n", value1);
+    printf("Value at A[1][2]: %d\n", value2);
+    return 0;
+}
+
+int two_dim_array_access(int *x, int i, int j, int m, int n) {
+     if (i < 0 || i >= m || j < 0 || j >= n) {
+        printf("Error: Index out of bounds!\n");
+        return -1; 
+    }
+
+    int *element_ptr = x + i * n + j;
+
+    return *element_ptr;
+}
