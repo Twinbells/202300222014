@@ -1,0 +1,65 @@
+/*
+*
+*Matrix A multiplies matrix B
+*
+*/
+include <stdio.h>
+
+void matrix_multi(double A[3][4], double B[4][5], double C[3][5]);
+void read_matrix(double matrix[3][4], const char *name);
+void read_matrix_4x5(double matrix[4][5], const char *name); 
+void print_matrix(double matrix[3][5], const char *name);
+int main() {
+    double A[3][4];
+    double B[4][5];
+    double C[3][5] = {0}; 
+    printf("Enter matrix A (3x4):\n");
+    read_matrix(A, "A");
+    
+    printf("Enter matrix B (4x5):\n");
+    read_matrix_4x5(B, "B"); 
+ 
+    matrix_multi(A, B, C);
+    
+    printf("Product matrix C (3x5):\n");
+    print_matrix(C, "C");
+    
+    return 0;
+}
+
+void read_matrix(double matrix[3][4], const char *name) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("Enter element [%d][%d] of matrix %s: ", i, j, name);
+            scanf("%lf", &matrix[i][j]);
+        }
+    }
+}
+void read_matrix_4x5(double matrix[4][5], const char *name) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("Enter element [%d][%d] of matrix %s: ", i, j, name);
+            scanf("%lf", &matrix[i][j]);
+        }
+    }
+}
+
+void print_matrix(double matrix[3][5], const char *name) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("%f ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void matrix_multi(double A[3][4], double B[4][5], double C[3][5]) {
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            C[i][j] = 0; 
+            for (int k = 0; k < 4; ++k) {
+                C[i][j] += A[i][k] * B[k][j]; 
+            }
+        }
+    }
+}
