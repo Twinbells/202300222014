@@ -4,101 +4,104 @@
 *
 */
 
-#include <ncurses.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <string.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdbool.h>
 
-#define WIDTH 960
-#define HEIGHT 640
-#define STR_SIZE 25
-#define STR_NUM 128
-#define STR_WIDTH 15
+#define COLUMNS 20
+#define DROP_COUNT 20
+#define INTERVAL 30000 //jian_ge_shi_jian_(wei_miao)
+#define COLS 120
+#define DROP_LENGTH 2 
+#define ALPHABET_LEN (sizeof(alphabet) - 1) // 
+
+const char *alphabet = "abcdefghijklmMNOPQRSTUVWXYZ !@#$%&";
 
 typedef struct {
-    int x, y;
-    int speed;
-    char str[STR_SIZE + 1]; 
-} Rain;
+    int y;
+    char c[DROP_LENGTH];
+} Drop;
 
-Rain rain[STR_NUM];
+Drop drops[COLUMNS][DROP_COUNT];
 
-char CreateChar() {
-    int flag = rand() % 3;
-    char temp;
-    if (flag == 0) {
-        temp = rand() % 26 + 'a';
-    } else if (flag == 1) {
-        temp = rand() % 26 + 'A';
-    } else {
-        temp = rand() % 10 + '0';
-    }
-    return temp;
+void clear_screen() {
+    printf("\033[H\033[J");
 }
 
-void InitRains() {
-    for (int i = 0; i < STR_NUM; i++) {
-        rain[i].x = i * STR_WIDTH;
-        rain[i].y = rand() % HEIGHT;
-        rain[i].speed = rand() % 5 + 5;
-        for (int j = 0; j < STR_SIZE; j++) {
-            rain[i].str[j] = CreateChar();
+void set_color(int color) {
+    switch (color) {
+        case 1:
+            printf("\033[32;40m"); // lv_se_bei_jing_hei_se_wen_zi
+            break;
+        case 2:
+            printf("\033[32m"); // lv_se_wen_zi
+            break;
+        default:
+            printf("\033[0m"); // hui_fu_mo_ren_yan_se
+            break;
+    }
+}
+
+void initialize_drops(Drop drops[][DROP_COUNT], int columns, const char *alphabet, int alphabet_len) {
+    for (int col = 0; col < columns; ++col) {
+        for (int i = 0; i < DROP_COUNT; ++i) {
+            drops[col][i].y = rand() % (34 - DROP_LENGTH);
+            for (int j = 0; j < DROP_LENGTH; ++j)
+                drops[col][i].c[j] = alphabet[rand() % alphabet_len];
         }
-        rain[i].str[STR_SIZE] = '\0'; 
     }
 }
-void DrawRains() {  
-    clear();  
-    start_color();  
-    attron(COLOR_PAIR(1)); 
-    for (int i = 0; i < STR_NUM; i++) {  
-        for (int j = 0; j < STR_SIZE && rain[i].y - j * STR_WIDTH > 0; j++) {   
-            mvprintw(rain[i].y - j * STR_WIDTH, rain[i].x, "%c", rain[i].str[j]);  
-        }  
-    }  
-    attroff(COLOR_PAIR(1));  
-    refresh();  
-}  
-void MoveRain()
-{
-	for (int i = 0; i < STR_NUM; i++)
-	{
-		rain[i].y += rain[i].speed;
-		if (rain[i].y- STR_WIDTH*STR_SIZE > HEIGHT)
-		{
-			rain[i].y = 0;
-		}
-	}
+
+void update_drops(Drop drops[][DROP_COUNT], int columns) {
+    for (int col = 0; col < columns; ++col) {
+        for (int i = 0; i < DROP_COUNT; ++i) {
+            for (int j = 0; j < DROP_LENGTH; ++j) {
+                if (++drops[col][i].y + j >= 34) {
+                    drops[col][i].y = 0;
+                    for (int k = 0; k < DROP_LENGTH; ++k)
+                        drops[col][i].c[k] = alphabet[rand() % ALPHABET_LEN];
+                }
+            }
+        }
+    }
 }
-void ChangeCh()
-{
-	for (int i = 0; i < STR_NUM; i++)
-	{
-		rain[rand() % STR_NUM].str[rand() % STR_SIZE] = CreateChar();
-	}
+
+void draw_rain(Drop drops[][DROP_COUNT], int columns, int cols) {
+    clear_screen();
+    for (int col = 0; col < columns; ++col) {
+        for (int i = 0; i < DROP_COUNT; ++i) {
+            set_color(1);
+            for (int j = 0; j < DROP_LENGTH; ++j) {
+                printf("\033[%d;%dH%c", drops[col][i].y + j, col * (cols / columns), drops[col][i].c[j]);
+            }
+            printf("\033[0G"); // hui_dao_hang_shou
+        }
+    }
 }
 
 int main() {
-    initscr(); 
-    cbreak(); 
-    noecho(); 
-    keypad(stdscr, TRUE); 
-    nodelay(stdscr, TRUE); 
+    srand(time(NULL));
+    initialize_drops(drops, COLUMNS, alphabet, ALPHABET_LEN);
 
-    start_color(); 
-    init_pair(1, COLOR_GREEN, COLOR_BLACK); 
+    bool running = true;
+    while (running) {
+        draw_rain(drops, COLUMNS, COLS);
+        update_drops(drops, COLUMNS);
+        usleep(INTERVAL);
 
-    srand(time(NULL)); 
-    InitRains(); 
+        int ch = getchar();
+        if (ch == 'q' || ch == EOF) {
+            running = false;
+        } else {
+            set_color(0); // chong_zhi_yan_se
+        }
 
-    int ch;
-    while ((ch = getch()) != 'q') { 
-        UpdateRains(); 
-        DrawRains(); 
-        usleep(100000);
+        // qing_li_huan_chong_qu
+        while (getchar() != '\n');
     }
 
-    endwin(); 
     return 0;
 }
